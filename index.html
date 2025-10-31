@@ -1,87 +1,87 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>متجر الورد — متجر الزبائن</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>متجر الورد الفاخر</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <div class="header-title">🌸 متجر الورد الفاخر</div>
-    <div class="small">تخصيص الباقات | خدمة العملاء</div>
-  </header>
 
-  <div class="container">
-    <!-- قسم الباقات الجاهزة -->
-    <div class="card">
-      <h2>قسم الباقات المتوفرة</h2>
-      <div id="ready-bouquets" class="grid"></div>
-    </div>
+<header>
+  <div class="header-title">🌸 متجر الورد الفاخر</div>
+</header>
 
-    <!-- قسم التخصيص -->
-    <div class="card">
-      <h2>تجهيز باقة مخصصة</h2>
-      <div class="flex" style="gap:18px;align-items:flex-start">
-        <div style="flex:1">
-          <div class="form-row"><label>اختَر باقة أساسية</label>
-            <select id="baseSelect"></select>
-          </div>
+<div class="container">
 
-          <div class="form-row"><label>عدد الورود</label><input type="number" id="qty" min="1" value="10"></div>
-          <div class="form-row"><label>لون الورد</label><select id="colorSelect"></select></div>
-          <div class="form-row"><label>نوع التغليف</label><select id="packSelect"></select></div>
-
-          <div class="form-row"><label>اسم المرسل</label><input type="text" id="custName"></div>
-          <div class="form-row"><label>رقم الهاتف</label><input type="text" id="custPhone"></div>
-
-          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
-            <button class="btn" id="calcBtn">حساب السعر وإرسال الطلب</button>
-            <button class="btn ghost" id="previewPrice">عرض السعر فقط</button>
-          </div>
-        </div>
-
-        <div style="width:340px">
-          <div class="card">
-            <h3>معاينة وحساب السعر</h3>
-            <div class="small">سعر الوردة الحالي: <span id="flowerPrice">-</span> د.ع</div>
-            <div class="small">سعر التغليف المختار: <span id="packPrice">-</span> د.ع</div>
-            <div style="margin-top:12px;font-size:20px;font-weight:800;color:var(--accent)">المجموع: <span id="totalPrice">0</span> د.ع</div>
-            <div style="margin-top:10px;color:var(--muted);font-size:13px">سيتم إرسال الطلب إلى لوحة التحكم لمراجعته.</div>
-          </div>
-
-          <div class="card">
-            <h3>خدمة العملاء</h3>
-            <form id="csForm">
-              <div class="form-row"><label>اسمك</label><input type="text" id="csName" required></div>
-              <div class="form-row"><label>استفسار</label><textarea id="csMsg" required></textarea></div>
-              <div style="text-align:left"><button class="btn" type="submit">إرسال</button></div>
-            </form>
-            <div style="margin-top:10px" class="small">رسائلك ستظهر في لوحة الأدمن.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer">© 2025 متجر الورد — جميع الحقوق محفوظة</div>
+  <!-- أزرار الأقسام -->
+  <div class="flex" style="justify-content:center;gap:12px;margin:20px 0">
+    <button class="btn section-btn" data-target="ready-section">💐 الباقات المتوفرة</button>
+    <button class="btn section-btn" data-target="custom-section">🎁 تخصيص باقة</button>
+    <button class="btn section-btn" data-target="cs-section">📞 خدمة العملاء</button>
   </div>
 
-<script>
-/* ===== بيانات من localStorage =====
-keys:
-- bouquets: array {name,description,price,image(base64)}
-- settings: {flowerPrice: number, packs: [{name,price}], colors: []}
-- orders: array {pkgName,qty,color,pack,price,name,phone,status,created}
-- cs: customer service messages array
-*/
+  <!-- قسم الباقات المتوفرة -->
+  <div id="ready-section" class="section">
+    <h2>الباقات الجاهزة</h2>
+    <div id="ready-bouquets" class="grid"></div>
+  </div>
 
-function getState(key, fallback){
-  try{ return JSON.parse(localStorage.getItem(key)) || fallback; }catch(e){ return fallback; }
-}
-function setState(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
+  <!-- قسم تخصيص باقة مخصصة -->
+  <div id="custom-section" class="section" style="display:none">
+    <h2>تخصيص باقة مخصصة</h2>
+    <div class="card">
+      <div class="form-row"><label>اختَر باقة أساسية</label>
+        <select id="baseSelect"></select>
+      </div>
+      <div class="form-row"><label>عدد الورود</label><input type="number" id="qty" min="1" value="10"></div>
+      <div class="form-row"><label>لون الورد</label><select id="colorSelect"></select></div>
+      <div class="form-row"><label>نوع التغليف</label><select id="packSelect"></select></div>
+      <div class="form-row"><label>اسم المرسل</label><input type="text" id="custName"></div>
+      <div class="form-row"><label>رقم الهاتف</label><input type="text" id="custPhone"></div>
+
+      <div class="flex" style="justify-content:flex-end;gap:8px;margin-top:8px">
+        <button class="btn" id="calcBtn">حساب السعر وإرسال الطلب</button>
+        <button class="btn ghost" id="previewPrice">عرض السعر فقط</button>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3>معاينة السعر</h3>
+        <div class="small">سعر الوردة الحالي: <span id="flowerPrice">-</span> د.ع</div>
+        <div class="small">سعر التغليف المختار: <span id="packPrice">-</span> د.ع</div>
+        <div style="margin-top:12px;font-size:20px;font-weight:800;color:var(--accent)">المجموع: <span id="totalPrice">0</span> د.ع</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- قسم خدمة العملاء -->
+  <div id="cs-section" class="section" style="display:none">
+    <h2>خدمة العملاء</h2>
+    <form id="csForm" class="card cs-form">
+      <div class="form-row"><label>اسمك</label><input type="text" id="csName" required></div>
+      <div class="form-row"><label>استفسارك</label><textarea id="csMsg" required></textarea></div>
+      <div style="text-align:left;margin-top:10px"><button class="btn" type="submit">إرسال</button></div>
+    </form>
+  </div>
+
+  <div class="footer">© 2025 متجر الورد — جميع الحقوق محفوظة</div>
+</div>
+
+<script>
+// إدارة الأقسام
+document.querySelectorAll('.section-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.section').forEach(sec=>sec.style.display='none');
+    document.getElementById(btn.dataset.target).style.display='block';
+  });
+});
+
+/* بيانات محلية */
+function getState(key, fallback){ try{ return JSON.parse(localStorage.getItem(key))||fallback;}catch(e){return fallback;} }
+function setState(key,val){ localStorage.setItem(key,JSON.stringify(val)); }
 
 const bouquets = getState('bouquets', []);
-const settings = getState('settings', {flowerPrice: 50, packs: [{name:'صندوق',price:10},{name:'سلة',price:7}], colors:['أحمر','أبيض','وردي']} );
+const settings = getState('settings', {flowerPrice:50,packs:[{name:'صندوق',price:10},{name:'سلة',price:7}],colors:['أحمر','أبيض','وردي']});
 
 const readyBouquetsEl = document.getElementById('ready-bouquets');
 const baseSelect = document.getElementById('baseSelect');
@@ -92,108 +92,98 @@ const packPriceEl = document.getElementById('packPrice');
 const totalPriceEl = document.getElementById('totalPrice');
 const qtyEl = document.getElementById('qty');
 
+// عرض الباقات الجاهزة
 function renderReadyBouquets(){
-  readyBouquetsEl.innerHTML = '';
-  if(!bouquets.length){ readyBouquetsEl.innerHTML = '<div class="small">لا توجد باقات حالياً</div>'; return; }
-  bouquets.forEach((b,i)=>{
+  readyBouquetsEl.innerHTML='';
+  if(!bouquets.length){ readyBouquetsEl.innerHTML='<div class="small">لا توجد باقات حالياً</div>'; return; }
+  bouquets.forEach(b=>{
     const d = document.createElement('div');
-    d.className = 'bouquet-card card';
+    d.className='bouquet-card card';
+    d.style.padding='8px';
     d.innerHTML = `
-      <img src="${b.image}" alt="${b.name}">
-      <h3>${b.name}</h3>
-      <p class="small">${b.description||''}</p>
-      <div class="price">${b.price} د.ع</div>
-      <div style="margin-top:8px"><button class="btn small" onclick="selectBase(${i})">اختر هذه الباقة</button></div>
+      <div style="width:150px;height:150px;overflow:hidden;margin:0 auto;border-radius:12px">
+        <img src="${b.image}" alt="${b.name}" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+      <h3 style="text-align:center;margin-top:8px">${b.name}</h3>
+      <p class="small" style="text-align:center">${b.description||''}</p>
+      <div class="price" style="text-align:center">${b.price} د.ع</div>
     `;
     readyBouquetsEl.appendChild(d);
   });
 }
 
+// إعداد المحددات
 function buildSelectors(){
-  baseSelect.innerHTML = '<option value="">-- اختر باقة --</option>';
+  baseSelect.innerHTML='<option value="">-- اختر باقة --</option>';
   bouquets.forEach((b,i)=> baseSelect.innerHTML += `<option value="${i}">${b.name} (${b.price} د.ع)</option>`);
-  colorSelect.innerHTML = '';
+  colorSelect.innerHTML='';
   settings.colors.forEach(c=> colorSelect.innerHTML += `<option value="${c}">${c}</option>`);
-  packSelect.innerHTML = '';
+  packSelect.innerHTML='';
   settings.packs.forEach((p,idx)=> packSelect.innerHTML += `<option value="${idx}">${p.name} (+${p.price} د.ع)</option>`);
-  flowerPriceEl.textContent = settings.flowerPrice || 0;
+  flowerPriceEl.textContent=settings.flowerPrice;
 }
 
-function selectBase(index){
-  baseSelect.value = index;
-  alert('تم اختيار: ' + bouquets[index].name);
-  updatePrice();
-}
-
+// حساب السعر
 function updatePrice(){
   const baseIdx = baseSelect.value;
-  const qty = Number(qtyEl.value) || 0;
-  const flowerPrice = Number(settings.flowerPrice) || 0;
+  const qty = Number(qtyEl.value)||0;
+  const flowerPrice = Number(settings.flowerPrice)||0;
   const packIdx = Number(packSelect.value);
   const packPrice = (settings.packs[packIdx] && settings.packs[packIdx].price) ? Number(settings.packs[packIdx].price) : 0;
-  const total = Math.round(qty * flowerPrice + packPrice);
-  flowerPriceEl.textContent = flowerPrice;
-  packPriceEl.textContent = packPrice;
-  totalPriceEl.textContent = total;
+  const total = Math.round(qty*flowerPrice + packPrice);
+  flowerPriceEl.textContent=flowerPrice;
+  packPriceEl.textContent=packPrice;
+  totalPriceEl.textContent=total;
   return total;
 }
 
-document.getElementById('previewPrice').addEventListener('click', e=>{
-  const total = updatePrice();
-  alert('السعر الإجمالي: ' + total + ' د.ع');
-});
+document.getElementById('previewPrice').addEventListener('click',()=>alert('السعر الإجمالي: '+updatePrice()+' د.ع'));
 
-document.getElementById('calcBtn').addEventListener('click', e=>{
+document.getElementById('calcBtn').addEventListener('click',()=>{
   const baseIdx = baseSelect.value;
-  if(baseIdx === '') return alert('اختر باقة أساسية أولاً');
-  const qty = Number(qtyEl.value) || 0;
+  if(baseIdx==='') return alert('اختر باقة أساسية');
+  const qty = Number(qtyEl.value)||0;
   if(qty<=0) return alert('أدخل عدد الورود');
   const name = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
-  if(!name || !phone) return alert('أدخل الاسم ورقم الهاتف');
-
+  if(!name||!phone) return alert('أدخل الاسم ورقم الهاتف');
+  
   const packIdx = Number(packSelect.value);
-  const packName = settings.packs[packIdx].name || '';
-  const packPrice = Number(settings.packs[packIdx].price) || 0;
-  const flowerPrice = Number(settings.flowerPrice) || 0;
-  const total = Math.round(qty * flowerPrice + packPrice);
+  const packName = settings.packs[packIdx].name||'';
+  const packPrice = Number(settings.packs[packIdx].price)||0;
+  const flowerPrice = Number(settings.flowerPrice)||0;
+  const total = Math.round(qty*flowerPrice + packPrice);
 
-  const order = {
-    pkgName: bouquets[baseIdx].name,
-    qty, color: colorSelect.value, pack: packName,
-    price: total, name, phone,
-    status: 'new',
-    created: Date.now()
-  };
-  const orders = getState('orders', []);
+  const order={pkgName:bouquets[baseIdx].name,qty,color:colorSelect.value,pack:packName,price:total,name,phone,status:'new',created:Date.now()};
+  const orders = getState('orders',[]);
   orders.unshift(order);
-  setState('orders', orders);
-  alert('تم إرسال الطلب. المجموع: ' + total + ' د.ع\nسيتابعك فريقنا.');
-  // clear inputs
+  setState('orders',orders);
+  alert('تم إرسال الطلب. المجموع: '+total+' د.ع');
   document.getElementById('custName').value='';
   document.getElementById('custPhone').value='';
 });
 
-document.getElementById('csForm').addEventListener('submit', e=>{
+document.getElementById('csForm').addEventListener('submit',e=>{
   e.preventDefault();
-  const n = document.getElementById('csName').value.trim();
-  const m = document.getElementById('csMsg').value.trim();
+  const n=document.getElementById('csName').value.trim();
+  const m=document.getElementById('csMsg').value.trim();
   if(!n||!m) return alert('املأ الحقول');
-  const cs = getState('cs', []);
+  const cs=getState('cs',[]);
   cs.unshift({name:n,msg:m,time:Date.now()});
-  setState('cs', cs);
-  alert('تم إرسال الرسالة. شكراً لتواصلك.');
+  setState('cs',cs);
+  alert('تم إرسال الرسالة.');
   e.target.reset();
 });
 
-qtyEl.addEventListener('input', updatePrice);
-packSelect.addEventListener('change', updatePrice);
-baseSelect.addEventListener('change', updatePrice);
+qtyEl.addEventListener('input',updatePrice);
+packSelect.addEventListener('change',updatePrice);
+baseSelect.addEventListener('change',updatePrice);
 
 renderReadyBouquets();
 buildSelectors();
 updatePrice();
 </script>
+
 </body>
 </html>
 
