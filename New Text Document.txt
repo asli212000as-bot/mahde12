@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>متجر الورود — واجهة المستخدم وادمن</title>
+  <style>
+    :root{ --bg:#fffaf8; --accent:#b76e79; --muted:#7b6f72; --gold:#d4af37 }
+    body{font-family: "Segoe UI", Tahoma, Helvetica, Arial, sans-serif;direction:rtl;background:var(--bg);color:#222;margin:0;padding:0}
+    header{background:linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.2));backdrop-filter:blur(6px);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0e6e6}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#f3c1c6);box-shadow:0 6px 18px rgba(183,110,121,0.15);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    h1{font-size:18px;margin:0}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{padding:24px;max-width:1100px;margin:20px auto}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+    .card{background:white;border-radius:14px;padding:16px;box-shadow:0 8px 30px rgba(0,0,0,0.06);display:flex;flex-direction:column}
+    .card img{width:100%;height:160px;object-fit:cover;border-radius:10px}
+    .card h3{margin:10px 0 6px 0}
+    .price{font-weight:700;color:var(--accent)}
+    .muted{color:var(--muted);font-size:14px}
+    .btn{background:var(--accent);color:white;padding:10px 12px;border-radius:10px;border:none;cursor:pointer}
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(183,110,121,0.18)}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.4)}
+    .modal.open{display:flex}
+    .panel{background:white;border-radius:12px;padding:18px;width:480px;max-width:94%}
+    .row{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+    label{min-width:110px}
+    select,input[type=number],input[type=text]{flex:1;padding:8px;border-radius:8px;border:1px solid #eee}
+    .admin-panel{background:#fff;border-radius:12px;padding:14px;box-shadow:0 6px 16px rgba(0,0,0,0.05);margin-top:20px}
+    .admin-grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .list-item{display:flex;gap:10px;align-items:center;padding:10px;border-bottom:1px dashed #f3eaea}
+    .small{font-size:13px;color:var(--muted)}
+    .orders-section{margin-top:20px;background:#fff;border-radius:12px;padding:14px;box-shadow:0 6px 16px rgba(0,0,0,0.05)}
+    footer{padding:20px;text-align:center;color:var(--muted)}
+    @media (max-width:720px){header{padding:12px} .admin-grid{grid-template-columns:1fr} .brand h1{font-size:16px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">ورد</div>
+      <div>
+        <h1>متجر الورود الفخم</h1>
+        <div class="small">تخصيص باقات، ألوان وتغليف — سريع وسهل</div>
+      </div>
+    </div>
+    <nav>
+      <a href="#" id="open-admin">لوحة الأدمن</a>
+      <a href="#">اتصل/الطلبات</a>
+    </nav>
+  </header>
+  <main>
+    <section>
+      <h2>الباقات المتاحة</h2>
+      <div id="catalog" class="grid"></div>
+    </section>
+    <section style="margin-top:28px">
+      <h2>لوحة الأدمن</h2>
+      <div class="admin-panel">
+        <div class="admin-grid">
+          <div>
+            <h3>إضافة / تعديل باقة</h3>
+            <div style="margin-top:8px">
+              <input id="pkg-id" type="hidden">
+              <div class="row"><label>اسم الباقة</label><input id="pkg-name" type="text" placeholder="مثال: باقة الحب"></div>
+              <div class="row"><label>السعر الأساسي</label><input id="pkg-price" type="number" min="0" value="100"></div>
+              <div class="row"><label>وصف</label><input id="pkg-desc" type="text" placeholder="وصف مختصر"></div>
+              <div class="row"><label>صورة</label><input id="pkg-img" type="file" accept="image/*"></div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn" id="save-pkg">حفظ الباقة</button>
+                <button class="btn secondary" id="clear-form">مسح النموذج</button>
+              </div>
+            </div>
+            <h3 style="margin-top:18px">إعدادات الألوان والتغليف</h3>
+            <div style="margin-top:8px">
+              <div class="row"><label>ألوان متاحة (مفصولة بفواصل)</label><input id="colors-list" type="text" placeholder="أحمر,أبيض,وردي"></div>
+              <div class="row"><label>تغليف (اسم:سعر مفصول بفواصل ; )</label><input id="packs-list" type="text" placeholder="صندوق:10,سلة:7"></div>
+              <div style="display:flex;gap:8px"><button class="btn" id="save-settings">حفظ الإعدادات</button></div>
+            </div>
+          </div>
+          <div>
+            <h3>قائمة الباقات</h3>
+            <div id="pkg-list" style="max-height:420px;overflow:auto"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="orders-section">
+      <h2>الطلبات الواردة</h2>
+      <div id="orders-list" style="max-height:420px;overflow:auto"></div>
+    </section>
+  </main>
+  <div id="modal" class="modal">
+    <div class="panel">
+      <h3 id="modal-title">تخصيص الباقة</h3>
+      <div class="row"><label>الكمية</label><input id="opt-qty" type="number" min="1" value="10"></div>
+      <div class="row"><label>اللون</label><select id="opt-color"></select></div>
+      <div class="row"><label>التغليف</label><select id="opt-pack"></select></div>
+      <div class="row"><label>السعر الحالي</label><div id="opt-price" style="font-weight:700;font-size:18px;color:var(--accent)">0</div></div>
+      <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end">
+        <button class="btn" id="buy-now">إرسال الطلب</button>
+        <button class="btn secondary" id="close-modal">الغاء</button>
+      </div>
+    </div>
+  </div>
+  <footer>© جميع الحقوق محفوظة — متجر الورود</footer>
+  <script>
+    let state = JSON.parse(localStorage.getItem('flower-shop')||'{"packages":[],"orders":[],"colors":["أحمر","أبيض"],"packs":[{"name":"صندوق","price":10}]}');
+    const catalog=document.getElementById('catalog');
+    const pkgList=document.getElementById('pkg-list');
+    const ordersList=document.getElementById('orders-list');
+    const pkgName=document.getElementById('pkg-name');
+    const pkgPrice=document.getElementById('pkg-price');
+    const pkgDesc=document.getElementById('pkg-desc');
+    const pkgImg=document.getElementById('pkg-img');
+    const pkgId=document.getElementById('pkg-id');
+    function save(){localStorage.setItem('flower-shop',JSON.stringify(state));}
+    function renderCatalog(){catalog.innerHTML='';state.packages.forEach(pkg=>{catalog.innerHTML+=`<div class='card'><img src='${pkg.img}'><h3>${pkg.name}</h3><div class='price'>${pkg.price} د.ع</div><button class='btn' onclick="openCustomize('${pkg.id}')">تخصيص الباقة</button></div>`});}
+    function renderAdmin(){pkgList.innerHTML='';state.packages.forEach(p=>{pkgList.innerHTML+=`<div class='list-item'><strong>${p.name}</strong><div class='small'>${p.price} د.ع</div><button class='btn' onclick="editPkg('${p.id}')">تعديل</button><button class='btn secondary' onclick="deletePkg('${p.id}')">حذف</button></div>`});renderOrders();}
+    function renderOrders(){ordersList.innerHTML='';if(!state.orders.length){ordersList.innerHTML='<div class="small">لا توجد طلبات حالياً</div>';return;}state.orders.forEach((o,i)=>{ordersList.innerHTML+=`<div class='list-item'><div><strong>${o.name}</strong><div class='small'>${o.phone}</div><div class='small'>باقة ${o.pkgName} (${o.qty}) - ${o.color} - ${o.pack}</div></div><button class='btn' onclick='removeOrder(${i})'>تم التسليم</button></div>`});}
+    document.getElementById('save-pkg').onclick=()=>{const id=pkgId.value||'p'+Date.now();const name=pkgName.value;const price=+pkgPrice.value;const desc=pkgDesc.value;const f=pkgImg.files[0];if(!name)return alert('ادخل الاسم');if(f){const r=new FileReader();r.onload=()=>{addOrUpdate({id,name,price,desc,img:r.result});};r.readAsDataURL(f);}else addOrUpdate({id,name,price,desc,img:'https://via.placeholder.com/300'});};
+    function addOrUpdate(pkg){const i=state.packages.findIndex(p=>p.id===pkg.id);if(i>=0)state.packages[i]=pkg;else state.packages.push(pkg);save();renderCatalog();renderAdmin();alert('تم الحفظ');}
+    window.deletePkg=id=>{state.packages=state.packages.filter(p=>p.id!==id);save();renderCatalog();renderAdmin();};
+    window.editPkg=id=>{const p=state.packages.find(x=>x.id===id);if(!p)return;pkgId.value=p.id;pkgName.value=p.name;pkgPrice.value=p.price;pkgDesc.value=p.desc;};
+    window.removeOrder=i=>{state.orders.splice(i,1);save();renderOrders();};
+    const modal=document.getElementById('modal');const optQty=document.getElementById('opt-qty');const optColor=document.getElementById('opt-color');const optPack=document.getElementById('opt-pack');const optPrice=document.getElementById('opt-price');const buyNow=document.getElementById('buy-now');const closeModal=document.getElementById('close-modal');let selectedPackage=null;
+    window.openCustomize=id=>{selectedPackage=state.packages.find(p=>p.id===id);modal.classList.add('open');optColor.innerHTML='';state.colors.forEach(c=>optColor.innerHTML+=`<option>${c}</option>`);optPack.innerHTML='';state.packs.forEach(p=>optPack.innerHTML+=`<option>${p.name}</option>`);updatePrice();};
+    function updatePrice(){const base=selectedPackage.price;optPrice.textContent=base+' د.ع';}
+    buyNow.onclick=()=>{const name=prompt('اسمك');const phone=prompt('رقمك');if(!name||!phone)return;state.orders.push({pkgName:selectedPackage.name,qty:+optQty.value,color:optColor.value,pack:optPack.value,name,phone});save();renderOrders();modal.classList.remove('open');alert('تم إرسال الطلب');};
+    closeModal.onclick=()=>modal.classList.remove('open');renderCatalog();renderAdmin();
+  </script>
+</body>
+</html>
