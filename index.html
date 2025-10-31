@@ -3,67 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>متجر الورد الفاخر</title>
+<title>لوحة تحكم الأدمن</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <header>
-  <div class="header-title">🌸 متجر الورد الفاخر</div>
+  <div class="header-title">🛠️ لوحة تحكم الأدمن</div>
 </header>
 
 <div class="container">
 
-  <div class="flex" style="justify-content:center;gap:12px;margin:20px 0">
-    <button class="btn section-btn" data-target="ready-section">💐 الباقات المتوفرة</button>
-    <button class="btn section-btn" data-target="cs-section">📞 خدمة العملاء</button>
-  </div>
+  <div class="admin-columns">
 
-  <!-- الباقات الجاهزة -->
-  <div id="ready-section" class="section">
-    <h2>الباقات الجاهزة</h2>
-    <div id="ready-bouquets" class="grid"></div>
-  </div>
-
-  <!-- خدمة العملاء -->
-  <div id="cs-section" class="section" style="display:none">
-    <h2>خدمة العملاء</h2>
-    <form id="csForm" class="card cs-form">
-      <div class="form-row"><label>اسمك</label><input type="text" id="csName" required></div>
-      <div class="form-row"><label>استفسارك</label><textarea id="csMsg" required></textarea></div>
-      <div style="text-align:left;margin-top:10px"><button class="btn" type="submit">إرسال</button></div>
-    </form>
-  </div>
-
-  <!-- مودال تفاصيل الباقة -->
-  <div id="bqModal" class="modal" style="display:none">
-    <div class="modal-content card">
-      <span class="close-btn">&times;</span>
-      <div id="modalImgContainer" style="width:200px;height:200px;margin:0 auto;overflow:hidden;border-radius:12px">
-        <img id="modalImg" src="" style="width:100%;height:100%;object-fit:cover;">
-      </div>
-      <h3 id="modalName" style="text-align:center;margin-top:8px"></h3>
-      <p id="modalDesc" class="small" style="text-align:center"></p>
-
-      <div class="form-row"><label>عدد الورود</label><input type="number" id="modalQty" min="1" value="10"></div>
-      <div class="form-row"><label>لون الورد</label><select id="modalColorSelect"></select></div>
-      <div class="form-row"><label>نوع التغليف</label><select id="modalPackSelect"></select></div>
-      <div class="form-row"><label>اسم المرسل</label><input type="text" id="modalNameInput"></div>
-      <div class="form-row"><label>رقم الهاتف</label><input type="text" id="modalPhoneInput"></div>
-
-      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
-        <button class="btn" id="modalSendBtn">إرسال الطلب</button>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <div class="small">سعر الوردة: <span id="modalFlowerPrice"></span> د.ع</div>
-        <div class="small">سعر التغليف: <span id="modalPackPrice"></span> د.ع</div>
-        <div style="margin-top:8px;font-weight:700;color:var(--accent)">المجموع: <span id="modalTotalPrice">0</span> د.ع</div>
+    <!-- إدارة الباقات -->
+    <div>
+      <h2>إضافة باقة جديدة</h2>
+      <div class="card">
+        <div class="form-row"><label>اسم الباقة</label><input type="text" id="bqName"></div>
+        <div class="form-row"><label>الوصف</label><textarea id="bqDesc"></textarea></div>
+        <div class="form-row"><label>السعر الأساسي</label><input type="number" id="bqPrice"></div>
+        <div class="form-row"><label>صورة الباقة</label><input type="file" id="bqImage"></div>
+        <button class="btn" id="addBouquet">إضافة الباقة</button>
       </div>
     </div>
+
+    <!-- إعدادات الورود والتغليف -->
+    <div>
+      <h2>إعدادات الأسعار والألوان والتغليف</h2>
+      <div class="card">
+        <div class="form-row"><label>سعر الوردة الواحدة</label><input type="number" id="flowerPriceIn"></div>
+        <div class="form-row"><label>ألوان الورود (افصل بفاصلة)</label><input type="text" id="colorsInput"></div>
+        <div class="form-row"><label>إضافة نوع تغليف</label><input type="text" id="newPackName" placeholder="اسم التغليف"><input type="number" id="newPackPrice" placeholder="السعر"></div>
+        <button class="btn" id="addPackBtn">إضافة التغليف</button>
+        <div id="packList" style="margin-top:10px"></div>
+        <button class="btn" id="saveSettings" style="margin-top:10px">حفظ الإعدادات</button>
+      </div>
+    </div>
+
+    <!-- الطلبات -->
+    <div>
+      <h2>الطلبات</h2>
+      <div class="flex" style="gap:6px;margin-bottom:6px">
+        <button class="btn small" onclick="filterOrders('all')">الكل</button>
+        <button class="btn small" onclick="filterOrders('new')">جديدة</button>
+        <button class="btn small" onclick="filterOrders('ready')">جاهزة</button>
+      </div>
+      <div id="ordersList" class="orders-list"></div>
+    </div>
+
+    <!-- رسائل العملاء -->
+    <div>
+      <h2>رسائل خدمة العملاء</h2>
+      <div id="csList" class="cs-list"></div>
+    </div>
+
   </div>
 
-  <div class="footer">© 2025 متجر الورد — جميع الحقوق محفوظة</div>
+  <div class="footer">© 2025 متجر الورد — لوحة التحكم</div>
 </div>
 
 <!-- Firebase -->
@@ -85,115 +82,118 @@ const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-// الأقسام
-document.querySelectorAll('.section-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.section').forEach(sec=>sec.style.display='none');
-    document.getElementById(btn.dataset.target).style.display='block';
-  });
-});
-
-let bouquets=[], settings={flowerPrice:50,packs:[],colors:[]};
-const readyBouquetsEl=document.getElementById('ready-bouquets');
+// البيانات
+let bouquets=[], orders=[], cs=[], settings={flowerPrice:50,packs:[],colors:[]};
 
 // جلب الباقات
-db.collection('bouquets').get().then(snapshot=>{
+db.collection('bouquets').get().then(snap=>{
   bouquets=[];
-  snapshot.forEach(doc=>bouquets.push({...doc.data(),id:doc.id}));
-  renderReadyBouquets();
+  snap.forEach(doc=>bouquets.push({...doc.data(),id:doc.id}));
 });
 
 // جلب الإعدادات
 db.collection('settings').doc('main').get().then(doc=>{
-  if(doc.exists){settings=doc.data();}
+  if(doc.exists){settings=doc.data(); renderPacks();}
 });
 
-// المودال
-const bqModal=document.getElementById('bqModal');
-const modalImg=document.getElementById('modalImg');
-const modalName=document.getElementById('modalName');
-const modalDesc=document.getElementById('modalDesc');
-const modalQty=document.getElementById('modalQty');
-const modalColorSelect=document.getElementById('modalColorSelect');
-const modalPackSelect=document.getElementById('modalPackSelect');
-const modalNameInput=document.getElementById('modalNameInput');
-const modalPhoneInput=document.getElementById('modalPhoneInput');
-const modalSendBtn=document.getElementById('modalSendBtn');
-const modalFlowerPrice=document.getElementById('modalFlowerPrice');
-const modalPackPrice=document.getElementById('modalPackPrice');
-const modalTotalPrice=document.getElementById('modalTotalPrice');
-const modalClose=document.querySelector('.close-btn');
+// جلب الطلبات
+db.collection('orders').orderBy('created','desc').onSnapshot(snapshot=>{
+  orders=[];
+  snapshot.forEach(doc=>orders.push({...doc.data(),id:doc.id}));
+  renderOrders();
+});
 
-modalClose.onclick=()=>{bqModal.style.display='none';};
+// جلب رسائل العملاء
+db.collection('cs').orderBy('time','desc').onSnapshot(snapshot=>{
+  cs=[];
+  snapshot.forEach(doc=>cs.push({...doc.data(),id:doc.id}));
+  renderCS();
+});
 
-function openModal(bq){
-  modalImg.src=bq.image;
-  modalName.textContent=bq.name;
-  modalDesc.textContent=bq.description||'';
-  modalQty.value=10;
-  modalNameInput.value=''; modalPhoneInput.value='';
-  modalColorSelect.innerHTML=''; (settings.colors||[]).forEach(c=> modalColorSelect.innerHTML+=`<option value="${c}">${c}</option>`);
-  modalPackSelect.innerHTML=''; (settings.packs||[]).forEach((p,idx)=> modalPackSelect.innerHTML+=`<option value="${idx}">${p.name} (+${p.price} د.ع)</option>`);
-  
-  function updateModalPrice(){
-    const qty=Number(modalQty.value)||0;
-    const flower=settings.flowerPrice||0;
-    const packIdx=Number(modalPackSelect.value);
-    const pack=settings.packs[packIdx]||{price:0};
-    const total=Math.round(qty*flower+pack.price);
-    modalFlowerPrice.textContent=flower;
-    modalPackPrice.textContent=pack.price;
-    modalTotalPrice.textContent=total;
+// إضافة باقة جديدة مع رفع الصورة
+document.getElementById('addBouquet').addEventListener('click',()=>{
+  const name=document.getElementById('bqName').value.trim();
+  const desc=document.getElementById('bqDesc').value.trim();
+  const price=Number(document.getElementById('bqPrice').value)||0;
+  const file=document.getElementById('bqImage').files[0];
+  if(!name) return alert('أدخل اسم الباقة');
+  if(file){
+    const ref=storage.ref('bouquets/'+Date.now()+'_'+file.name);
+    ref.put(file).then(snap=>snap.ref.getDownloadURL()).then(url=>{
+      db.collection('bouquets').add({name,description:desc,price,image:url}).then(()=>{alert('تمت إضافة الباقة');});
+    });
+  } else {
+    db.collection('bouquets').add({name,description:desc,price,image:''}).then(()=>{alert('تمت إضافة الباقة');});
   }
-
-  modalQty.addEventListener('input',updateModalPrice);
-  modalPackSelect.addEventListener('change',updateModalPrice);
-  updateModalPrice();
-  bqModal.style.display='flex';
-
-  modalSendBtn.onclick=()=>{
-    const qty=Number(modalQty.value)||0;
-    const name=modalNameInput.value.trim();
-    const phone=modalPhoneInput.value.trim();
-    if(!name||!phone) return alert('أدخل الاسم ورقم الهاتف');
-    const packIdx=Number(modalPackSelect.value);
-    const pack=settings.packs[packIdx]||{name:'',price:0};
-    const total=Math.round(qty*(settings.flowerPrice||0)+pack.price);
-    const order={pkgName:bq.name,qty,color:modalColorSelect.value,pack:pack.name,price:total,name,phone,status:'new',created:Date.now()};
-    db.collection('orders').add(order).then(()=>{alert('تم إرسال الطلب. المجموع: '+total+' د.ع');bqModal.style.display='none';});
-  };
-}
-
-function renderReadyBouquets(){
-  readyBouquetsEl.innerHTML='';
-  if(!bouquets.length){ readyBouquetsEl.innerHTML='<div class="small">لا توجد باقات حالياً</div>'; return; }
-  bouquets.forEach(b=>{
-    const d=document.createElement('div');
-    d.className='bouquet-card card';
-    d.innerHTML = `
-      <div style="width:150px;height:150px;overflow:hidden;margin:0 auto;border-radius:12px;cursor:pointer">
-        <img src="${b.image}" alt="${b.name}" style="width:100%;height:100%;object-fit:cover;">
-      </div>
-      <h3 style="text-align:center;margin-top:8px">${b.name}</h3>
-      <p class="small" style="text-align:center">${b.description||''}</p>
-      <div class="price" style="text-align:center">${b.price} د.ع</div>
-    `;
-    readyBouquetsEl.appendChild(d);
-    d.querySelector('div').onclick=()=>openModal(b);
-  });
-}
-
-// خدمة العملاء
-document.getElementById('csForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const n=document.getElementById('csName').value.trim();
-  const m=document.getElementById('csMsg').value.trim();
-  if(!n||!m) return alert('املأ الحقول');
-  db.collection('cs').add({name:n,msg:m,time:Date.now()}).then(()=>{
-    alert('تم إرسال الرسالة.');
-    e.target.reset();
-  });
 });
+
+// إضافة نوع تغليف
+document.getElementById('addPackBtn').addEventListener('click',()=>{
+  const n=document.getElementById('newPackName').value.trim();
+  const p=Number(document.getElementById('newPackPrice').value)||0;
+  if(!n) return alert('أدخل اسم التغليف');
+  settings.packs.push({name:n,price:p});
+  renderPacks();
+  document.getElementById('newPackName').value=''; document.getElementById('newPackPrice').value='';
+});
+
+// حفظ الإعدادات
+document.getElementById('saveSettings').addEventListener('click',()=>{
+  settings.flowerPrice=Number(document.getElementById('flowerPriceIn').value)||0;
+  settings.colors=document.getElementById('colorsInput').value.split(',').map(c=>c.trim()).filter(c=>c);
+  db.collection('settings').doc('main').set(settings).then(()=>alert('تم حفظ الإعدادات'));
+});
+
+// عرض أنواع التغليف
+function renderPacks(){
+  const div=document.getElementById('packList');
+  div.innerHTML='';
+  settings.packs.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className='small';
+    d.innerHTML=`${p.name} (+${p.price} د.ع) <button class="btn small" onclick="removePack(${i})">حذف</button>`;
+    div.appendChild(d);
+  });
+}
+
+function removePack(i){
+  settings.packs.splice(i,1);
+  renderPacks();
+}
+
+// عرض الطلبات
+function renderOrders(filter='all'){
+  const el=document.getElementById('ordersList');
+  el.innerHTML='';
+  let filtered=orders;
+  if(filter!=='all') filtered=orders.filter(o=>o.status===filter);
+  if(!filtered.length){el.innerHTML='<div class="small">لا توجد طلبات</div>'; return;}
+  filtered.forEach((o,i)=>{
+    const d=document.createElement('div'); d.className='card';
+    d.innerHTML=`<strong>${o.name} (${o.phone})</strong>
+    <div class="small">باقة: ${o.pkgName}, عدد: ${o.qty}, لون: ${o.color}, تغليف: ${o.pack}</div>
+    <div class="small">السعر: ${o.price} د.ع</div>
+    <button class="btn small" onclick="markReady('${o.id}')">تم تجهيز الطلب ✅</button>`;
+    el.appendChild(d);
+  });
+}
+
+function filterOrders(f){renderOrders(f);}
+function markReady(id){db.collection('orders').doc(id).update({status:'ready'});}
+
+// عرض رسائل العملاء
+function renderCS(){
+  const el=document.getElementById('csList');
+  el.innerHTML='';
+  if(!cs.length){el.innerHTML='<div class="small">لا توجد رسائل</div>'; return;}
+  cs.forEach(c=>{
+    const d=document.createElement('div'); d.className='card';
+    d.innerHTML=`<strong>${c.name}</strong><div class="small">${c.msg}</div><div class="small">${new Date(c.time).toLocaleString()}</div>`;
+    el.appendChild(d);
+  });
+}
 </script>
 </body>
 </html>
+
+
