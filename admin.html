@@ -1,117 +1,310 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة التحكم - متجر الورد</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>لوحة تحكم المتجر</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header>
-    <h1>لوحة التحكم - متجر الورد</h1>
+    <div class="header-title">🔧 لوحة تحكم - متجر الورد</div>
+    <div class="small">إدارة الباقات، الأسعار، والطلبات</div>
   </header>
 
-  <main>
-    <section id="add-bouquet">
-      <h2>إضافة باقة جديدة</h2>
-      <form id="bouquetForm">
-        <label>اسم الباقة:</label>
-        <input type="text" id="bqName" required />
+  <div class="container">
+    <!-- حماية بسيطة -->
+    <div class="card">
+      <h3>تسجيل دخول الأدمن</h3>
+      <div class="form-row">
+        <label>كلمة المرور</label>
+        <input type="password" id="adminPass" placeholder="ادخل كلمة المرور">
+        <button class="btn" id="adminLogin">دخول</button>
+      </div>
+      <div id="adminLockedMsg" class="small">معطل: يرجى تسجيل الدخول لعرض لوحة التحكم.</div>
+    </div>
 
-        <label>الوصف:</label>
-        <textarea id="bqDesc" required></textarea>
+    <!-- لوحة التحكم (مخفية حتى تسجيل الدخول) -->
+    <div id="adminPanel" style="display:none">
+      <div class="card admin-columns">
+        <div>
+          <h3>إضافة / تعديل باقة</h3>
+          <div class="form-row"><label>اسم الباقة</label><input type="text" id="bqName"></div>
+          <div class="form-row"><label>الوصف</label><input type="text" id="bqDesc"></div>
+          <div class="form-row"><label>السعر الأساسي (عرض)</label><input type="number" id="bqPrice" value="0"></div>
+          <div class="form-row"><label>صورة الباقة</label><input type="file" id="bqImage" accept="image/*"></div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
+            <button class="btn" id="saveBq">حفظ الباقة</button>
+            <button class="btn ghost" id="clearBq">مسح الحقول</button>
+          </div>
 
-        <label>السعر:</label>
-        <input type="number" id="bqPrice" required />
+          <h3 style="margin-top:14px">إعدادات عامة</h3>
+          <div class="form-row"><label>سعر الوردة الواحدة</label><input type="number" id="flowerPrice" value="50"></div>
+          <div class="form-row"><label>ألوان متاحة (مفصولة بفواصل)</label><input type="text" id="colorsInput" placeholder="أحمر,أبيض,وردي"></div>
 
-        <label>رابط الصورة:</label>
-        <input type="text" id="bqImage" placeholder="رابط مباشر للصورة" />
+          <h4>أسعار التغليف</h4>
+          <div id="packsContainer"></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input type="text" id="newPackName" placeholder="اسم التغليف">
+            <input type="number" id="newPackPrice" placeholder="سعر">
+            <button class="btn" id="addPack">إضافة تغليف</button>
+          </div>
 
-        <button type="submit">إضافة</button>
-      </form>
-    </section>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+            <button class="btn" id="saveSettings">حفظ الإعدادات</button>
+          </div>
+        </div>
 
-    <section id="bouquets-list">
-      <h2>الباقات الحالية</h2>
-      <div id="adminBouquets"></div>
-    </section>
+        <div>
+          <h3>قائمة الباقات</h3>
+          <div id="adminBouquets" style="max-height:300px;overflow:auto"></div>
 
-    <section id="orders">
-      <h2>الطلبات الواردة</h2>
-      <div id="ordersList"></div>
-    </section>
-  </main>
+          <h3 style="margin-top:12px">الطلبات الواردة</h3>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <button class="btn small" onclick="filterOrders('all')">الكل</button>
+            <button class="btn small" onclick="filterOrders('new')">جديدة</button>
+            <button class="btn small" onclick="filterOrders('ready')">جاهزة</button>
+            <button class="btn small" onclick="filterOrders('completed')">مكتملة</button>
+          </div>
+          <div id="ordersList" class="orders-list" style="max-height:420px;overflow:auto"></div>
+        </div>
+      </div>
 
-  <footer>
-    <p>© 2025 لوحة تحكم متجر الورد</p>
-  </footer>
+      <div class="card">
+        <h3>خدمة العملاء (الرسائل)</h3>
+        <div id="csList" class="cs-list"></div>
+      </div>
+    </div>
 
-  <script>
-    const bouquetForm = document.getElementById('bouquetForm');
-    const adminBouquets = document.getElementById('adminBouquets');
+    <div class="footer">© 2025 لوحة تحكم متجر الورد</div>
+  </div>
 
-    function refreshBouquets() {
-      const bouquets = JSON.parse(localStorage.getItem('bouquets')) || [];
-      adminBouquets.innerHTML = '';
-      bouquets.forEach((bq, i) => {
-        const div = document.createElement('div');
-        div.className = 'bouquet-card';
-        div.innerHTML = `
-          <h3>${bq.name}</h3>
-          <p>${bq.description}</p>
-          <strong>${bq.price} د.ع</strong>
-          <button onclick="deleteBouquet(${i})">حذف</button>
-        `;
-        adminBouquets.appendChild(div);
-      });
-    }
+<script>
+/* ==== مفاتيح التخزين: bouquets, settings, orders, cs ==== */
+const ADMIN_PASSWORD = 'admin123'; // عدلها أو اربط Firebase Auth لاحقًا
 
-    bouquetForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const newBq = {
-        name: document.getElementById('bqName').value,
-        description: document.getElementById('bqDesc').value,
-        price: document.getElementById('bqPrice').value,
-        image: document.getElementById('bqImage').value,
-      };
+function getState(key, fallback){ try{return JSON.parse(localStorage.getItem(key))||fallback;}catch(e){return fallback;} }
+function setState(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
 
-      const bouquets = JSON.parse(localStorage.getItem('bouquets')) || [];
-      bouquets.push(newBq);
-      localStorage.setItem('bouquets', JSON.stringify(bouquets));
-      bouquetForm.reset();
-      refreshBouquets();
+// عناصر
+const adminLogin = document.getElementById('adminLogin');
+const adminPass = document.getElementById('adminPass');
+const adminPanel = document.getElementById('adminPanel');
+const adminLockedMsg = document.getElementById('adminLockedMsg');
+
+const bqName = document.getElementById('bqName'), bqDesc = document.getElementById('bqDesc'), bqPrice = document.getElementById('bqPrice'), bqImage = document.getElementById('bqImage');
+const saveBq = document.getElementById('saveBq'), clearBq = document.getElementById('clearBq');
+const adminBouquets = document.getElementById('adminBouquets');
+
+const flowerPriceIn = document.getElementById('flowerPrice'), colorsInput = document.getElementById('colorsInput');
+const packsContainer = document.getElementById('packsContainer'), addPack = document.getElementById('addPack'), newPackName = document.getElementById('newPackName'), newPackPrice = document.getElementById('newPackPrice');
+const saveSettings = document.getElementById('saveSettings');
+const ordersList = document.getElementById('ordersList');
+const csList = document.getElementById('csList');
+
+let bouquets = getState('bouquets', []);
+let settings = getState('settings', {flowerPrice:50, packs:[{name:'صندوق',price:10},{name:'سلة',price:7}], colors:['أحمر','أبيض','وردي']});
+let orders = getState('orders', []);
+let cs = getState('cs', []);
+
+function lockToAdmin(){
+  adminPanel.style.display='none'; adminLockedMsg.style.display='block';
+}
+function unlockAdmin(){
+  adminPanel.style.display='block'; adminLockedMsg.style.display='none';
+  populateAdmin();
+}
+
+adminLogin.addEventListener('click', ()=>{
+  if(adminPass.value === ADMIN_PASSWORD){
+    unlockAdmin();
+    adminPass.value='';
+  } else alert('كلمة المرور خاطئة');
+});
+
+// حفظ باقة (رفع الصورة إلى Base64)
+saveBq.addEventListener('click', ()=>{
+  const name = bqName.value.trim(); if(!name) return alert('اكتب اسم الباقة');
+  const price = Number(bqPrice.value)||0;
+  const desc = bqDesc.value.trim();
+  const file = bqImage.files[0];
+  if(file){
+    const r = new FileReader();
+    r.onload = e=>{
+      bouquets.unshift({name,description:desc,price,image:e.target.result});
+      setState('bouquets', bouquets);
+      alert('تمت إضافة الباقة');
+      clearBqFields();
+      populateAdmin();
+    };
+    r.readAsDataURL(file);
+  } else {
+    bouquets.unshift({name,description:desc,price,image:'',});
+    setState('bouquets', bouquets);
+    alert('تمت إضافة الباقة (بدون صورة)');
+    clearBqFields();
+    populateAdmin();
+  }
+});
+
+clearBq.addEventListener('click', clearBqFields);
+function clearBqFields(){ bqName.value=''; bqDesc.value=''; bqPrice.value='0'; bqImage.value=''; }
+
+// إدارة الباقات في الواجهة
+function populateAdmin(){
+  // باقات
+  adminBouquets.innerHTML='';
+  bouquets.forEach((b,i)=>{
+    const div = document.createElement('div');
+    div.className='bouquet-card';
+    div.innerHTML = `
+      <div style="display:flex;gap:8px;align-items:center">
+        <img src="${b.image||'data:image/svg+xml;utf8,<svg xmlns=...></svg>'}" style="width:64px;height:64px;object-fit:cover;border-radius:8px">
+        <div style="flex:1">
+          <strong>${b.name}</strong>
+          <div class="small">${b.price} د.ع</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="btn small" onclick="editBq(${i})">تعديل</button>
+          <button class="btn ghost small" onclick="deleteBq(${i})">حذف</button>
+        </div>
+      </div>
+    `;
+    adminBouquets.appendChild(div);
+  });
+
+  // إعدادات
+  flowerPriceIn.value = settings.flowerPrice || 0;
+  colorsInput.value = (settings.colors||[]).join(',');
+  renderPacks();
+
+  // الطلبات
+  renderOrders();
+
+  // خدمة العملاء
+  renderCS();
+}
+
+function editBq(i){
+  const b = bouquets[i];
+  bqName.value = b.name;
+  bqDesc.value = b.description||'';
+  bqPrice.value = b.price||0;
+  // للتعديل: نقوم بحذف القديمة ثم حفظ الجديدة عند الضغط حفظ
+  // أو يمكن عمل نظام id للتعديل لاحقًا — هذه نسخة مبسطة
+  bouquets.splice(i,1);
+  setState('bouquets', bouquets);
+  populateAdmin();
+}
+
+function deleteBq(i){
+  if(!confirm('حذف الباقة؟')) return;
+  bouquets.splice(i,1); setState('bouquets', bouquets); populateAdmin();
+}
+
+// إدارة التغليف
+function renderPacks(){
+  packsContainer.innerHTML='';
+  (settings.packs||[]).forEach((p,idx)=>{
+    const div = document.createElement('div');
+    div.className='form-row';
+    div.innerHTML = `<label>${p.name}</label><input type="number" value="${p.price}" data-idx="${idx}" class="pack-input"> <button class="btn ghost small" onclick="removePack(${idx})">حذف</button>`;
+    packsContainer.appendChild(div);
+  });
+  // أضف مستمع لتغيّر الأسعار
+  Array.from(document.getElementsByClassName('pack-input')).forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      const idx = e.target.getAttribute('data-idx');
+      settings.packs[idx].price = Number(e.target.value) || 0;
     });
+  });
+}
 
-    function deleteBouquet(i) {
-      const bouquets = JSON.parse(localStorage.getItem('bouquets')) || [];
-      bouquets.splice(i, 1);
-      localStorage.setItem('bouquets', JSON.stringify(bouquets));
-      refreshBouquets();
-    }
+addPack.addEventListener('click', ()=>{
+  const name = newPackName.value.trim(); const price = Number(newPackPrice.value)||0;
+  if(!name) return alert('اكتب اسم التغليف');
+  settings.packs.push({name,price});
+  newPackName.value=''; newPackPrice.value='';
+  renderPacks();
+});
 
-    // عرض الطلبات
-    const ordersList = document.getElementById('ordersList');
-    function refreshOrders() {
-      const orders = JSON.parse(localStorage.getItem('orders')) || [];
-      ordersList.innerHTML = '';
-      orders.forEach((o, i) => {
-        const card = document.createElement('div');
-        card.className = 'order-card';
-        card.innerHTML = `
-          <h4>طلب ${i + 1}</h4>
-          <p><strong>الاسم:</strong> ${o.name}</p>
-          <p><strong>الهاتف:</strong> ${o.phone}</p>
-          <p><strong>الباقة:</strong> ${o.bouquet}</p>
-          <p><strong>العدد:</strong> ${o.quantity}</p>
-          <p><strong>اللون:</strong> ${o.color}</p>
-          <p><strong>التغليف:</strong> ${o.wrap}</p>
-        `;
-        ordersList.appendChild(card);
-      });
-    }
+// حفظ الإعدادات
+saveSettings.addEventListener('click', ()=>{
+  settings.flowerPrice = Number(flowerPriceIn.value) || 0;
+  settings.colors = colorsInput.value.split(',').map(s=>s.trim()).filter(Boolean);
+  setState('settings', settings);
+  alert('تم حفظ الإعدادات');
+  // تحديث الواجهة العامة
+  // (index.html) سيقرأ من localStorage تلقائياً عند التحميل التالي
+});
 
-    refreshBouquets();
-    refreshOrders();
-  </script>
+// طلبات وإدارتها
+function renderOrders(filter='all'){
+  orders = getState('orders', []);
+  ordersList.innerHTML='';
+  const filtered = orders.filter(o=> filter==='all' ? true : o.status===filter );
+  if(!filtered.length){ ordersList.innerHTML = '<div class="small">لا توجد طلبات</div>'; return; }
+  filtered.forEach((o,i)=>{
+    const idx = orders.indexOf(o); // index in main orders array
+    const div = document.createElement('div');
+    div.className='order-item';
+    div.innerHTML = `
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <strong>طلب #${idx+1} — ${o.pkgName}</strong>
+          <span class="tag ${o.status}">${o.status==='new'?'جديدة':o.status==='ready'?'جاهزة':'مكتملة'}</span>
+        </div>
+        <div class="order-meta">
+          ${o.qty} وردة — لون: ${o.color} — تغليف: ${o.pack} — السعر: ${o.price} د.ع
+          <div>الاسم: ${o.name} — الهاتف: ${o.phone}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${ o.status === 'new' ? `<button class="btn small" onclick="markReady(${idx})">تم تجهيز الطلب</button>` : '' }
+        ${ o.status === 'ready' ? `<button class="btn small" onclick="markCompleted(${idx})">تم التسليم</button>` : '' }
+        <button class="btn ghost small" onclick="deleteOrder(${idx})">حذف</button>
+      </div>
+    `;
+    ordersList.appendChild(div);
+  });
+}
+
+function markReady(i){
+  orders[i].status = 'ready'; setState('orders', orders); renderOrders(currentFilter);
+}
+function markCompleted(i){
+  orders[i].status = 'completed'; setState('orders', orders); renderOrders(currentFilter);
+}
+function deleteOrder(i){
+  if(!confirm('حذف الطلب؟')) return;
+  orders.splice(i,1); setState('orders', orders); renderOrders(currentFilter);
+}
+
+let currentFilter = 'all';
+function filterOrders(f){ currentFilter = f; renderOrders(f); }
+
+// خدمة العملاء
+function renderCS(){
+  cs = getState('cs', []);
+  csList.innerHTML='';
+  if(!cs.length) { csList.innerHTML = '<div class="small">لا رسائل</div>'; return; }
+  cs.forEach((m, i)=>{
+    const d = document.createElement('div');
+    d.className='cs-item';
+    d.innerHTML = `<div><strong>${m.name}</strong> <span class="small">(${new Date(m.time).toLocaleString()})</span></div><div>${m.msg}</div><div style="text-align:left;margin-top:6px"><button class="btn ghost small" onclick="deleteCS(${i})">حذف</button></div>`;
+    csList.appendChild(d);
+  });
+}
+function deleteCS(i){ cs.splice(i,1); setState('cs', cs); renderCS(); }
+
+// init
+lockToAdmin();
+// make sure stored settings are present
+setState('settings', settings);
+setState('bouquets', bouquets);
+setState('orders', orders);
+setState('cs', cs);
+</script>
 </body>
 </html>
+
