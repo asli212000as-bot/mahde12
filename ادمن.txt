@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة التحكم - متجر الورد</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>لوحة التحكم - متجر الورد</h1>
+  </header>
+
+  <main>
+    <section id="add-bouquet">
+      <h2>إضافة باقة جديدة</h2>
+      <form id="bouquetForm">
+        <label>اسم الباقة:</label>
+        <input type="text" id="bqName" required />
+
+        <label>الوصف:</label>
+        <textarea id="bqDesc" required></textarea>
+
+        <label>السعر:</label>
+        <input type="number" id="bqPrice" required />
+
+        <label>رابط الصورة:</label>
+        <input type="text" id="bqImage" placeholder="رابط مباشر للصورة" />
+
+        <button type="submit">إضافة</button>
+      </form>
+    </section>
+
+    <section id="bouquets-list">
+      <h2>الباقات الحالية</h2>
+      <div id="adminBouquets"></div>
+    </section>
+
+    <section id="orders">
+      <h2>الطلبات الواردة</h2>
+      <div id="ordersList"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 لوحة تحكم متجر الورد</p>
+  </footer>
+
+  <script>
+    const bouquetForm = document.getElementById('bouquetForm');
+    const adminBouquets = document.getElementById('adminBouquets');
+
+    function refreshBouquets() {
+      const bouquets = JSON.parse(localStorage.getItem('bouquets')) || [];
+      adminBouquets.innerHTML = '';
+      bouquets.forEach((bq, i) => {
+        const div = document.createElement('div');
+        div.className = 'bouquet-card';
+        div.innerHTML = `
+          <h3>${bq.name}</h3>
+          <p>${bq.description}</p>
+          <strong>${bq.price} د.ع</strong>
+          <button onclick="deleteBouquet(${i})">حذف</button>
+        `;
+        adminBouquets.appendChild(div);
+      });
+    }
+
+    bouquetForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const newBq = {
+        name: document.getElementById('bqName').value,
+        description: document.getElementById('bqDesc').value,
+        price: document.getElementById('bqPrice').value,
+        image: document.getElementById('bqImage').value,
+      };
+
+      const bouquets = JSON.parse(localStorage.getItem('bouquets')) || [];
+      bouquets.push(newBq);
+      localStorage.setItem('bouquets', JSON.stringify(bouquets));
+      bouquetForm.reset();
+      refreshBouquets();
+    });
+
+    function deleteBouquet(i) {
+      const bouquets = JSON.parse(localStorage.getItem('bouquets')) || [];
+      bouquets.splice(i, 1);
+      localStorage.setItem('bouquets', JSON.stringify(bouquets));
+      refreshBouquets();
+    }
+
+    // عرض الطلبات
+    const ordersList = document.getElementById('ordersList');
+    function refreshOrders() {
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      ordersList.innerHTML = '';
+      orders.forEach((o, i) => {
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        card.innerHTML = `
+          <h4>طلب ${i + 1}</h4>
+          <p><strong>الاسم:</strong> ${o.name}</p>
+          <p><strong>الهاتف:</strong> ${o.phone}</p>
+          <p><strong>الباقة:</strong> ${o.bouquet}</p>
+          <p><strong>العدد:</strong> ${o.quantity}</p>
+          <p><strong>اللون:</strong> ${o.color}</p>
+          <p><strong>التغليف:</strong> ${o.wrap}</p>
+        `;
+        ordersList.appendChild(card);
+      });
+    }
+
+    refreshBouquets();
+    refreshOrders();
+  </script>
+</body>
+</html>

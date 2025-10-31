@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>متجر الورد الفاخر</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>🌸 متجر الورد الفاخر 🌸</h1>
+  </header>
+
+  <main id="store">
+    <section id="flowers-list">
+      <h2>الباقات المتوفرة</h2>
+      <div id="bouquets"></div>
+    </section>
+
+    <section id="customize">
+      <h2>تخصيص الباقة</h2>
+      <form id="customizeForm">
+        <label>عدد الورود:</label>
+        <input type="number" id="quantity" min="1" required />
+
+        <label>لون الورد:</label>
+        <select id="color">
+          <option value="أحمر">أحمر</option>
+          <option value="أبيض">أبيض</option>
+          <option value="وردي">وردي</option>
+        </select>
+
+        <label>نوع التغليف:</label>
+        <select id="wrap">
+          <option value="صندوق">صندوق</option>
+          <option value="سلة">سلة</option>
+          <option value="كيس فاخر">كيس فاخر</option>
+        </select>
+
+        <label>الاسم:</label>
+        <input type="text" id="name" required />
+
+        <label>رقم الهاتف:</label>
+        <input type="tel" id="phone" required />
+
+        <button type="submit">إرسال الطلب</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 متجر الورد - جميع الحقوق محفوظة</p>
+  </footer>
+
+  <script>
+    const bouquetsContainer = document.getElementById('bouquets');
+    const bouquets = JSON.parse(localStorage.getItem('bouquets')) || [];
+
+    function displayBouquets() {
+      bouquetsContainer.innerHTML = '';
+      bouquets.forEach((bq, index) => {
+        const div = document.createElement('div');
+        div.className = 'bouquet-card';
+        div.innerHTML = `
+          <img src="${bq.image || 'flower.jpg'}" alt="${bq.name}" />
+          <h3>${bq.name}</h3>
+          <p>${bq.description}</p>
+          <strong>${bq.price} د.ع</strong>
+          <button onclick="selectBouquet(${index})">تخصيص</button>
+        `;
+        bouquetsContainer.appendChild(div);
+      });
+    }
+
+    let selectedBouquet = null;
+    function selectBouquet(index) {
+      selectedBouquet = bouquets[index];
+      alert('تم اختيار باقة: ' + selectedBouquet.name);
+    }
+
+    document.getElementById('customizeForm').addEventListener('submit', e => {
+      e.preventDefault();
+      if (!selectedBouquet) return alert('يرجى اختيار باقة أولاً');
+
+      const order = {
+        bouquet: selectedBouquet.name,
+        quantity: document.getElementById('quantity').value,
+        color: document.getElementById('color').value,
+        wrap: document.getElementById('wrap').value,
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+      };
+
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      orders.push(order);
+      localStorage.setItem('orders', JSON.stringify(orders));
+      alert('تم إرسال الطلب بنجاح!');
+      e.target.reset();
+    });
+
+    displayBouquets();
+  </script>
+</body>
+</html>
